@@ -3,8 +3,6 @@ buffer-concat [![Build Status](https://secure.travis-ci.org/fengmk2/buffer-conca
 
 concat patch for Buffer in node &lt; 0.8.
 
-jscoverage: [100%](http://fengmk2.github.com/coverage/buffer-concat.html)
-
 ## Install
 
 ```bash
