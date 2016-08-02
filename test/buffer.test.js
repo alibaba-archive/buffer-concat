@@ -10,59 +10,70 @@
  * Module dependencies.
  */
 
-require('../');
 var should = require('should');
-var http = require('http');
+var bufferConcat = require('../');
 
-describe('buffer.test.js', function () {
-  it('should cancat two buffer', function () {
+describe('concat-buffer', function () {
+  it('should concat two buffer', function () {
     var b1 = new Buffer('hello');
     var b2 = new Buffer('你好');
-    Buffer.concat([b1, b2]).toString().should.equal('hello你好');
+    bufferConcat([b1, b2]).toString().should.equal('hello你好');
   });
 
-  it('should cancat one buffer', function () {
-    Buffer.concat([new Buffer('你好')]).toString().should.equal('你好');
+  it('should concat one buffer', function () {
+    bufferConcat([new Buffer('你好')]).toString().should.equal('你好');
   });
 
-  it('should cancat empty buffer', function () {
-    Buffer.concat([]).toString().should.equal('');
+  it('should concat empty buffer', function () {
+    bufferConcat([]).toString().should.equal('');
   });
 
-  it('should throw error when cancat not buffer list', function () {
+  it('should throw error when concat not buffer list', function () {
     (function () {
-      Buffer.concat([1, 2]);
-    }).should.throw("Object 1 has no method 'copy'");
+      bufferConcat([1, 2]);
+    }).should.throw(TypeError);
   });
 
-  it('should cancat chunks with size', function (done) {
-    var options = {
-      host: 'nodejs.org'
-    };
-    http.get(options, function (res) {
-      var chunks = [];
-      var size = 0;
-      res.on('data', function (chunk) {
-        size += chunk.length;
-        chunks.push(chunk);
-      });
-      res.on('end', function () {
-        var data = Buffer.concat(chunks, size);
-        data.toString().should.include('<title>node.js</title>');
-        done();
-      });
-    });
+  it('should concat chunks with size', function () {
+    var text = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.';
+    var size = text.length;
+    var chunks = [
+      new Buffer(text.substring(0, 18)),
+      new Buffer(text.substring(18, 19)),
+      new Buffer(text.substring(19, 43)),
+      new Buffer(text.substring(43, 50)),
+      new Buffer(text.substring(50, 67)),
+      new Buffer(text.substring(67, 69)),
+      new Buffer(text.substring(69))
+    ];
+
+    bufferConcat(chunks, size).toString().should.equal(text);
   });
 
   it('should throw error when input list is not Array', function () {
     (function () {
-      Buffer.concat();
-    }).should.throw('Usage: Buffer.concat(list, [length])');
+      bufferConcat();
+    }).should.throw('Usage: bufferConcat(list, [length])');
     (function () {
-      Buffer.concat('');
-    }).should.throw('Usage: Buffer.concat(list, [length])');
+      bufferConcat('');
+    }).should.throw('Usage: bufferConcat(list, [length])');
     (function () {
-      Buffer.concat(new Buffer(''));
-    }).should.throw('Usage: Buffer.concat(list, [length])');
+      bufferConcat(new Buffer(''));
+    }).should.throw('Usage: bufferConcat(list, [length])');
+  });
+});
+
+describe('polyfill', function () {
+  it('should polyfill upon request', function () {
+    var oldConcat = Buffer.concat;
+    delete Buffer.concat;
+
+    require('../polyfill');
+    delete require.cache[require.resolve('../polyfill')];
+
+    Buffer.concat.should.equal(bufferConcat);
+    delete Buffer.concat;
+
+    Buffer.concat = oldConcat;
   });
 });

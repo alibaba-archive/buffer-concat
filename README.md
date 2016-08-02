@@ -17,17 +17,17 @@ $ npm install buffer-concat
 
 ```js
 // require before you use Buffer.concat
-require('buffer-concat');
+var bufferConcat = require('buffer-concat');
 
 var b1 = new Buffer('Hello');
 var b2 = new Buffer(' world');
-var b3 = Buffer.concat([b1, b2]);
+var b3 = bufferConcat([b1, b2]);
 console.log(b3.toString());
 
 // for datas concat
 var http = require('http');
 var options = {
-  host: 'cnodejs.org'
+  host: 'nodejs.org'
 };
 http.get(options, function (res) {
   var chunks = [];
@@ -37,13 +37,28 @@ http.get(options, function (res) {
     chunks.push(chunk);
   });
   res.on('end', function () {
-    var data = Buffer.concat(chunks, size);
+    var data = bufferConcat(chunks, size);
     console.log(data.toString());
   });
 });
 ```
 
-## License 
+Node.js 0.8.0 and newer provides this functionality out of the box on the
+native buffer object (`Buffer.concat`). If you rather this module work as a
+[polyfill](https://remysharp.com/2010/10/08/what-is-a-polyfill), you can require
+it as such: `require('buffer-concat/polyfill')`. Doing so will make sure that
+`Buffer.concat` works no matter what version of Node.js you are using.
+
+```javascript
+require('buffer-concat/polyfill');
+
+var b1 = new Buffer('Hello');
+var b2 = new Buffer(' world');
+var b3 = Buffer.concat([b1, b2]);
+console.log(b3.toString());
+```
+
+## License
 
 (The MIT License)
 
