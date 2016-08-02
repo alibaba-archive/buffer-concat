@@ -1,6 +1,6 @@
 {
   "name": "buffer-concat",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "concat patch for Buffer in node < 0.8.",
   "main": "index.js",
   "scripts": {
